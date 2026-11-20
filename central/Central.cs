@@ -8,7 +8,8 @@
 //  O que mudares no Painel (lumen.json) é aplicado na hora.
 //  Lumen.Central.exe            arranca (uma instância)
 //  Lumen.Central.exe --sair     fecha a que está a correr
-//  Lumen.Central.exe --fundo P  só desenha o fundo vivo com o progresso P (0..1) em fundo-teste.png
+//  Lumen.Central.exe --fundo P [tema] [saida.png] [largura altura]
+//                               só desenha o fundo vivo com o progresso P (0..1), por omissão em fundo-teste.png
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -42,9 +43,13 @@ static class P
         if (a.Length > 0 && (a[0] == "--sair" || a[0] == "--parar")) { Sinal("Sair"); return; }
         if (a.Length > 1 && a[0] == "--fundo")
         {
+            // --fundo P [tema] [saida.png] [largura] [altura]
+            if (a.Length > 2) P.Cfg["tema"] = a[2];
+            string saida = a.Length > 3 ? a[3] : Path.Combine(Lumen.Dados, "fundo-teste.png");
             var b = Screen.PrimaryScreen.Bounds;
-            using (var bmp = Fundo.Desenhar(b.Width, b.Height, double.Parse(a[1], CultureInfo.InvariantCulture)))
-                bmp.Save(Path.Combine(Lumen.Dados, "fundo-teste.png"), ImageFormat.Png);
+            int w = a.Length > 5 ? int.Parse(a[4]) : b.Width, h = a.Length > 5 ? int.Parse(a[5]) : b.Height;
+            using (var bmp = Fundo.Desenhar(w, h, double.Parse(a[1], CultureInfo.InvariantCulture)))
+                bmp.Save(saida, ImageFormat.Png);
             return;
         }
         bool nova;

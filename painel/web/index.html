@@ -32,7 +32,7 @@ h2{font:600 13px/1 "Segoe UI",sans-serif;letter-spacing:.12em;text-transform:upp
 .card{background:var(--card);border:1px solid var(--line);border-radius:20px;backdrop-filter:blur(30px) saturate(140%);box-shadow:0 10px 30px rgba(0,0,0,.12)}
 .lista>.item{display:flex;align-items:center;gap:16px;padding:16px 20px;border-top:1px solid var(--line)}
 .lista>.item:first-child{border-top:0}
-.item .tx{flex:1;min-width:0}.item .tx b{display:block;font-weight:600}.item .tx small{display:block;color:var(--m);font-size:12.5px;margin-top:2px}
+.item .tx{flex:1;min-width:0}.item .tx>b{display:block;font-weight:600}.item .tx small b{font-weight:700}.item .tx small{display:block;color:var(--m);font-size:12.5px;margin-top:2px}
 .ico{width:36px;height:36px;border-radius:11px;flex:none;display:grid;place-items:center;background:var(--card2)}
 .ico svg{width:19px;height:19px;stroke:var(--acc);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .sw{position:relative;width:46px;height:27px;flex:none;border-radius:14px;background:rgba(127,127,127,.35);cursor:pointer;transition:background .2s}
@@ -121,7 +121,7 @@ a.lk{color:var(--acc);cursor:pointer;text-decoration:none}a.lk:hover{text-decora
 // Fora do Lumen (num browser), uma demonstração com dados de exemplo.
 if(!window.chrome||!window.chrome.webview){const hs=[];const env=d=>setTimeout(()=>hs.forEach(f=>f({data:d})),60);
  const tm=(id,nome,base,luz,ceu,claro)=>({id,nome,base,luz,ceu,claro:!!claro});
- window.chrome={webview:{addEventListener:(t,f)=>hs.push(f),postMessage:o=>{if(o.acao==='pronto')env({tipo:'estado',dados:{lingua:'pt',versao:'1.0.0',arranque:true,aCorrer:{barra:true,central:true},barra:{hideBanners:true,remoteVisible:false},
+ window.chrome={webview:{addEventListener:(t,f)=>hs.push(f),postMessage:o=>{if(o.acao==='pronto')env({tipo:'estado',dados:{lingua:new URLSearchParams(location.search).get('lingua')||'pt',versao:'1.0.0',arranque:true,aCorrer:{barra:true,central:true},barra:{hideBanners:true,remoteVisible:false},
   temas:[tm('esmeralda','Esmeralda',["#1d5236","#1a4c32","#17462e","#15402a","#133b27","#103322","#0d2a1c","#0a2116"],["#2f8a58","#38935f","#429c67","#4ea670","#5bb07a","#6aba85","#7bc592","#8fd0a1"],["#08140e","#04100a"]),
    tm('oceano','Oceano',["#0f4766","#0d4160","#0b3b58","#0a3550","#082f48","#06283e","#052134","#041a2a"],["#1f7fa8","#2489b0","#2a93b8","#319dc0","#3aa7c8","#46b1cf","#55bcd6","#69c8de"],["#04121f","#020b14"]),
    tm('indigo','Índigo',["#3a2580","#352279","#301f70","#2b1c66","#26195c","#201551","#1a1145","#140d38"],["#6a4fc0","#7257c7","#7b60cd","#8569d3","#8f73d9","#9a7ede","#a68ae3","#b398e8"],["#0d0824","#07041a"]),

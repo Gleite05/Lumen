@@ -87,6 +87,20 @@ h3 span{margin-left:auto;font-size:12px;letter-spacing:0;text-transform:none;fon
 </div>
 
 <script>
+// Fora do Lumen (num browser): demonstração com dados de exemplo. ?fundo=imagem&lingua=pt|en|es
+if(!window.chrome||!window.chrome.webview){const hs=[],q=new URLSearchParams(location.search),env=(tipo,dados)=>hs.forEach(f=>f({data:dados===undefined?tipo:{tipo,dados}}));
+ window.chrome={webview:{addEventListener:(t,f)=>hs.push(f),postMessage:o=>{if(o.acao!=='pronto')return;setTimeout(()=>{
+  env({tipo:'config',idioma:q.get('lingua')||'pt',tema:{vidro:'rgba(10,30,20,.40)',texto:'#eafff2',suave:'rgba(234,255,242,.62)',luz:['','','','','#5bb07a'],base:['','','','','','','#0d2a1c']},paineis:{}});
+  if(q.get('fundo'))env({tipo:'fundo',url:q.get('fundo'),x:+(q.get('x')||110),y:+(q.get('y')||40),w:+(q.get('w')||1920),h:+(q.get('h')||1200)});
+  env('servidores',[{nome:'NAS',sub:'Ficheiros',ok:true,ms:1,acao:'x'},{nome:'Router',sub:'Gateway',ok:true,ms:2,acao:'x'},{nome:'Servidor web',sub:'Sites',ok:true,ms:12,acao:'x'},{nome:'Base de dados',sub:'PostgreSQL',ok:true,ms:3,acao:'x'},
+   {nome:'Backups',sub:'Cópias noturnas',ok:true,ms:4,acao:'x'},{nome:'Câmaras',sub:'Videovigilância',ok:true,ms:6,acao:'x'},{nome:'Impressora',sub:'Escritório',ok:false,ms:-1,acao:'x'},{nome:'Casa',sub:'Home Assistant',ok:true,ms:38,acao:'x'}]);
+  env('agenda',{aberto:true,eventos:[{ini:'09:30',fim:'10:00',a:-400,b:-370,titulo:'Reunião de equipa',local:'Teams'},{ini:'15:00',fim:'15:45',a:42,b:87,titulo:'Revisão do projeto',local:'Sala 2'},{ini:'16:30',fim:'17:00',a:132,b:162,titulo:'Chamada com cliente',local:''}]});
+  env('rede',{internet:true,ms:14,ip:'203.0.113.42'});
+  env('vpn',{entradas:[],ligada:'Escritório',desde:5520,ocupada:{}});
+  env('tempo',{temp:17,codigo:1});
+  env('atalhos',[{nome:'Ficheiros',icone:'folder',acao:'x'},{nome:'Terminal',icone:'terminal',acao:'x'},{nome:'Email',icone:'mail',acao:'x'},{nome:'NAS',icone:'server',acao:'x'},{nome:'Casa',icone:'home',acao:'x'},{nome:'Câmaras',icone:'camera',acao:'x'},{nome:'Código',icone:'code',acao:'x'},{nome:'Definições',icone:'gear',acao:'x'}]);
+  env('musica',{tem:true,titulo:'Noite em Lisboa',artista:'Exemplo · Lumen',aTocar:true,pos:84,dur:214,capa:q.get('capa')||''});
+ },50)}}};}
 const $=id=>document.getElementById(id);
 const post=o=>window.chrome.webview.postMessage(o);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));

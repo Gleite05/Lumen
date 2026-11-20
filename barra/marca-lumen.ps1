@@ -61,6 +61,17 @@ Get-ChildItem $Destino -Recurse -File | Where-Object { $textos -contains $_.Exte
 }
 Write-Host "marca: $n ficheiros de texto alterados"
 
+# 2b. Traduções: "Atrium" e "Atrium Desktop" passam ambos a "Lumen" e a chave fica repetida
+#     (a app de definições rejeita um ficheiro com chaves repetidas). Fica a primeira.
+Get-ChildItem (Join-Path $Destino 'locales') -Filter *.json | ForEach-Object {
+    $vistas = @{}; $fora = 0
+    $linhas = [IO.File]::ReadAllLines($_.FullName) | Where-Object {
+        if ($_ -match '^  "((?:[^"\\]|\\.)*)"\s*:') { if ($vistas.ContainsKey($Matches[1])) { $script:fora++; return $false }; $vistas[$Matches[1]] = 1 }
+        return $true
+    }
+    if ($fora) { [IO.File]::WriteAllLines($_.FullName, $linhas, $utf8); Write-Host "marca: $($_.Name) sem $fora chave(s) repetida(s)" }
+}
+
 # 3. Nomes de ficheiros e pastas (das folhas para a raiz).
 Get-ChildItem $Destino -Recurse | Where-Object { $_.Name -clike '*Atrium*' } | Sort-Object { $_.FullName.Length } -Descending | ForEach-Object {
     Rename-Item -LiteralPath $_.FullName -NewName ($_.Name.Replace('Atrium', 'Lumen'))

@@ -1,0 +1,14 @@
+name: 💡 Ideia · Idea · Idea
+description: Uma funcionalidade ou melhoria para o Lumen. / A feature or improvement. / Una función o mejora.
+labels: [ideia]
+body:
+  - type: textarea
+    id: ideia
+    attributes:
+      label: O que gostavas que o Lumen fizesse? · What should Lumen do? · ¿Qué te gustaría que hiciera Lumen?
+    validations:
+      required: true
+  - type: textarea
+    id: porque
+    attributes:
+      label: Para quê? · Why? · ¿Para qué?

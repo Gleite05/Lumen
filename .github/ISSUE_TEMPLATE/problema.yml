@@ -1,0 +1,34 @@
+name: 🐞 Algo não funciona · Something's wrong · Algo no funciona
+description: Encontraste um problema no Lumen. / You found a problem in Lumen. / Has encontrado un problema en Lumen.
+labels: [problema]
+body:
+  - type: textarea
+    id: o-que
+    attributes:
+      label: O que aconteceu? · What happened? · ¿Qué ha pasado?
+      description: E o que esperavas que acontecesse. / And what you expected. / Y qué esperabas.
+    validations:
+      required: true
+  - type: textarea
+    id: passos
+    attributes:
+      label: Como repetir · Steps to reproduce · Cómo repetirlo
+      placeholder: "1. …\n2. …"
+  - type: input
+    id: versao
+    attributes:
+      label: Versão do Lumen · Lumen version · Versión de Lumen
+      description: Painel → Sobre · Panel → About · Panel → Acerca de
+      placeholder: "1.0.0"
+    validations:
+      required: true
+  - type: input
+    id: windows
+    attributes:
+      label: Windows
+      placeholder: "Windows 11 24H2"
+  - type: textarea
+    id: registos
+    attributes:
+      label: Registos · Logs · Registros
+      description: "Ficheiros em %LOCALAPPDATA%\Lumen\logs (arrasta-os para aqui). / Files in %LOCALAPPDATA%\Lumen\logs (drag them here). / Archivos en %LOCALAPPDATA%\Lumen\logs (arrástralos aquí)."

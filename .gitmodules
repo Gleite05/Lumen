@@ -1,0 +1,4 @@
+[submodule "atrium-desktop"]
+	path = atrium-desktop
+	url = https://github.com/Gleite05/atrium-desktop
+	branch = vpn

@@ -1,0 +1,6 @@
+*.png binary
+*.cur binary
+*.ani binary
+*.ico binary
+*.cmd text eol=crlf
+*.reg binary

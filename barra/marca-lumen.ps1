@@ -85,3 +85,5 @@ $resto = Get-ChildItem $Destino -Recurse -File | Where-Object { $textos -contain
     Select-String -SimpleMatch -CaseSensitive 'Atrium' -List
 if ($resto) { $resto | Select-Object -First 10 | ForEach-Object { Write-Warning "$($_.Path):$($_.LineNumber)" }; throw 'Sobrou "Atrium" no código' }
 Write-Host "marca: Lumen $Versao pronto em $Destino"
+
+exit 0

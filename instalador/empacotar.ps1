@@ -44,3 +44,5 @@ Set-Content "$Saida\THIRD-PARTY-NOTICES.txt" ($notas + "`r`n`r`n----- Atrium Des
 $n = (Get-ChildItem $Saida -Recurse -File).Count
 $mb = [math]::Round(((Get-ChildItem $Saida -Recurse -File | Measure-Object Length -Sum).Sum / 1MB), 1)
 Write-Host "pacote: $n ficheiros, $mb MB em $Saida"
+
+exit 0

@@ -35,6 +35,7 @@ O fundo é um relógio disfarçado: as camadas acendem-se ao longo do horário d
 - **Widget do Spotify** (ou de qualquer leitor): capa do álbum, música, artista, progresso e botões anterior / play / seguinte.
 - **Contadores vermelhos nos ícones** das apps: mensagens do WhatsApp, Telegram, Outlook… (conta as notificações desde a última vez que abriste a app, ou o “(N)” no título da janela).
 - **Clicar numa notificação abre a app** (antes podia fechá-la).
+- **Só as notificações do Atrium**: os avisos do Windows ficam escondidos («Não incomodar — só alarmes») e cada notificação aparece uma vez, no cartão de vidro por cima do sino.
 - **Tecla Windows abre o Iniciar do Atrium.**
 - **Arranca depois do Explorer** ao iniciar sessão — sem isto o Windows podia saltar os programas de arranque e o fundo de ecrã.
 

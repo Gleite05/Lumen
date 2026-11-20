@@ -74,7 +74,7 @@
     "microsoft.screensketch_"
   ],
   "hideTaskbar": false,
-  "hideBanners": false,
+  "hideBanners": true,
   "trayHost": true,
   "remoteVisible":  true,
   "winKeyStart": true,

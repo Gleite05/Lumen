@@ -13,4 +13,4 @@ set WM=%WINDIR%\System32\WinMetadata
  /r:"%OUT%\Microsoft.Web.WebView2.Core.dll" /r:"%OUT%\Microsoft.Web.WebView2.WinForms.dll" ^
  /r:"%WM%\Windows.Foundation.winmd" /r:"%WM%\Windows.Media.winmd" /r:"%WM%\Windows.Storage.winmd" ^
  /r:"%FW%\System.Runtime.dll" /r:"%FW%\System.Runtime.WindowsRuntime.dll" /r:"%FW%\System.Runtime.InteropServices.WindowsRuntime.dll" /r:"%FW%\System.Threading.Tasks.dll" ^
- "%~dp0Central.cs" "%~dp0Dados.cs" "%~dp0Musica.cs" "%~dp0Guarda.cs"
+ "%~dp0Central.cs" "%~dp0Dados.cs" "%~dp0Musica.cs" "%~dp0Guarda.cs" "%~dp0Rato.cs"

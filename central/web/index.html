@@ -13,7 +13,7 @@ h3 span{margin-left:auto;font-size:12px;letter-spacing:0;text-transform:none;fon
 .date .sub{font-size:26px;font-weight:300;color:var(--m);margin-top:10px}
 .srv{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 .s{border-radius:18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);padding:14px 16px;transition:background .15s,transform .15s}
-.s[data-acao]:hover,.sh a:hover,.chip:hover{background:rgba(255,255,255,.13);transform:translateY(-1px)}
+.s[data-acao]:hover,.sh a:hover,.chip:hover,.s[data-acao].hov,.sh a.hov,.chip.hov{background:rgba(255,255,255,.13);transform:translateY(-1px)}
 .s b{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden}
 .s b:before{content:"";flex:none;width:9px;height:9px;border-radius:50%;background:var(--m);opacity:.5}
 .s.ok b:before{background:var(--ok);box-shadow:0 0 12px var(--ok);opacity:1}
@@ -50,7 +50,7 @@ h3 span{margin-left:auto;font-size:12px;letter-spacing:0;text-transform:none;fon
 .prog{margin-top:12px;height:4px;border-radius:2px;background:rgba(255,255,255,.2)} .prog i{display:block;height:4px;border-radius:2px;background:#fff;width:0}
 .ctl{display:flex;gap:6px;margin-top:10px}
 .ctl button{width:34px;height:34px;border-radius:50%;border:0;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center}
-.ctl button:hover{background:rgba(255,255,255,.2)}
+.ctl button:hover,.ctl button.hov{background:rgba(255,255,255,.2)}
 .ctl svg{width:16px;height:16px;fill:var(--t)}
 [data-acao],[data-vpn],.ctl button{cursor:pointer}
 </style></head><body>
@@ -117,7 +117,16 @@ const H={
   $('pr').style.width=(m.dur?100*m.pos/m.dur:0)+'%';
   $('playIco').innerHTML=m.aTocar?'<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>':'<path d="M7 4v16l13-8z"/>';}
 };
-window.chrome.webview.addEventListener('message',e=>{const m=e.data;if(m.tipo==='fundo')H.fundo(m);else if(H[m.tipo])H[m.tipo](m.dados);});
+// O rato chega pelo Central (os painéis estão por baixo dos ícones do ambiente de trabalho).
+let hovEl=null;
+function Rato(m){
+ if(m.ev==='sair'){if(hovEl){hovEl.classList.remove('hov');hovEl=null}return}
+ const t=document.elementFromPoint(m.x,m.y);
+ const el=t&&t.closest('[data-acao],[data-vpn],[data-m]');
+ if(m.ev==='mover'){if(el!==hovEl){if(hovEl)hovEl.classList.remove('hov');hovEl=el;if(el)el.classList.add('hov')}}
+ else if(m.ev==='clique'&&t)t.dispatchEvent(new MouseEvent('click',{bubbles:true,clientX:m.x,clientY:m.y}));
+}
+window.chrome.webview.addEventListener('message',e=>{const m=e.data;if(m.tipo==='fundo')H.fundo(m);else if(m.tipo==='rato')Rato(m);else if(H[m.tipo])H[m.tipo](m.dados);});
 document.addEventListener('click',e=>{
  const a=e.target.closest('[data-acao]');if(a){post({acao:'abrir',alvo:a.dataset.acao});return}
  const v=e.target.closest('[data-vpn]');if(v&&v.dataset.vpn){post({acao:'vpn',nome:v.dataset.vpn,ligar:v.dataset.ligar?'True':'False'});return}

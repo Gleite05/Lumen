@@ -209,6 +209,7 @@ static class Fundo
 class Janela : Form
 {
     [DllImport("user32.dll", CharSet = CharSet.Unicode)] static extern IntPtr FindWindow(string c, string n);
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)] static extern IntPtr FindWindowEx(IntPtr p, IntPtr after, string c, string n);
     [DllImport("user32.dll")] static extern IntPtr SetParent(IntPtr c, IntPtr p);
     [DllImport("user32.dll")] static extern int GetWindowLong(IntPtr h, int i);
     [DllImport("user32.dll")] static extern int SetWindowLong(IntPtr h, int i, int v);
@@ -237,7 +238,7 @@ class Janela : Form
         dados.Avisar = (t, m) => Avisar(t, m);
         CriarIcone();
         Load += async (s, e) => await Iniciar();
-        relogio.Tick += (s, e) => { if (Fundo.Atualizar(false)) EnviarFundo(); };
+        relogio.Tick += (s, e) => { if (Fundo.Atualizar(false)) EnviarFundo(); ManterPorBaixo(); };
     }
 
     protected override CreateParams CreateParams
@@ -265,10 +266,17 @@ class Janela : Form
             int st = GetWindowLong(Handle, -16);
             st = (st & ~unchecked((int)0x80000000)) | 0x40000000; // tira WS_POPUP, põe WS_CHILD
             SetWindowLong(Handle, -16, st);
-            SetParent(Handle, prog);
+            // Por baixo dos ícones, como os fundos animados: o 0x052C pede ao Explorer uma camada própria
+            // para o fundo (WorkerW, atrás da lista dos ícones) e a janela vai para dentro dela.
+            // Os ícones ficam sempre à frente; os cliques no vazio chegam aos painéis pelo Rato.
+            IntPtr camada = CamadaDoFundo(prog);
+            IntPtr pai = camada != IntPtr.Zero ? camada : prog;
+            SetParent(Handle, pai);
             var pt = new Point(area.X, area.Y);
-            ScreenToClient(prog, ref pt);
-            SetWindowPos(Handle, IntPtr.Zero, pt.X, pt.Y, area.Width, area.Height, 0x0040 | 0x0010); // SHOWWINDOW | NOACTIVATE, topo dos filhos
+            ScreenToClient(pai, ref pt);
+            SetWindowPos(Handle, IntPtr.Zero, pt.X, pt.Y, area.Width, area.Height, 0x0040 | 0x0010); // SHOWWINDOW | NOACTIVATE
+            Rato.Ligar(this, web, area, camada != IntPtr.Zero);
+            P.Log(camada != IntPtr.Zero ? "por baixo dos ícones (WorkerW)" : "sem WorkerW: por cima dos ícones");
         }
         else
         {
@@ -277,6 +285,41 @@ class Janela : Form
         }
         P.Log("ancorada " + (filho ? "no Progman" : "no fundo") + " em " + area);
     }
+
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)] static extern IntPtr SendMessageTimeout(IntPtr h, uint m, IntPtr w, IntPtr l, uint f, uint t, out IntPtr r);
+    [DllImport("user32.dll")] static extern IntPtr GetParent(IntPtr h);
+    delegate bool EnumProc(IntPtr h, IntPtr l);
+    [DllImport("user32.dll")] static extern bool EnumWindows(EnumProc p, IntPtr l);
+
+    static IntPtr CamadaDoFundo(IntPtr prog)
+    {
+        IntPtr r;
+        SendMessageTimeout(prog, 0x052C, new IntPtr(0xD), new IntPtr(1), 0, 1000, out r);
+        SendMessageTimeout(prog, 0x052C, IntPtr.Zero, IntPtr.Zero, 0, 1000, out r);
+        // Windows 11 recente: o WorkerW é filho do Progman, atrás do SHELLDLL_DefView.
+        IntPtr w = FindWindowEx(prog, IntPtr.Zero, "WorkerW", null);
+        if (w != IntPtr.Zero) return w;
+        // Antes: um WorkerW de topo logo a seguir à janela que tem o SHELLDLL_DefView.
+        IntPtr achado = IntPtr.Zero;
+        EnumWindows((h, l) =>
+        {
+            if (FindWindowEx(h, IntPtr.Zero, "SHELLDLL_DefView", null) != IntPtr.Zero)
+                achado = FindWindowEx(IntPtr.Zero, h, "WorkerW", null);
+            return achado == IntPtr.Zero;
+        }, IntPtr.Zero);
+        return achado;
+    }
+
+    // Se o Explorer recriar a camada do fundo, a janela volta para dentro dela.
+    void ManterPorBaixo()
+    {
+        if (P.S(P.Cfg, "modo") == "fundo") return;
+        IntPtr pai = GetParent(Handle);
+        if (pai == IntPtr.Zero || !IsWindowClass(pai, "WorkerW")) Ancorar();
+    }
+
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)] static extern int GetClassName(IntPtr h, System.Text.StringBuilder s, int n);
+    static bool IsWindowClass(IntPtr h, string c) { var s = new System.Text.StringBuilder(64); GetClassName(h, s, 64); return s.ToString() == c; }
 
     async Task Iniciar()
     {

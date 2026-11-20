@@ -3,7 +3,7 @@
 O fundo de ecrã deixa de ser só uma imagem e passa a ser uma central de controlo.
 
 - **O fundo conta as horas, em segredo.** As 8 camadas verdes acendem-se de baixo para cima ao longo do horário de trabalho definido. Às 9:00 estão apagadas e no fim do dia estão todas acesas; a camada da hora em curso tem um fio de luz na crista. Quem olha vê só um fundo bonito. Nos fins de semana e feriados fica apagado.
-- **Painéis por cima, como se fizessem parte do fundo** (a janela fica embutida no ambiente de trabalho, ao lado dos ícones; sobrevive ao Win+D):
+- **Painéis no próprio fundo, por baixo dos ícones** (como os fundos animados: a janela vai para a camada `WorkerW` que o Explorer cria atrás da lista dos ícones; sobrevive ao Win+D). Os ícones ficam sempre à frente; o rato no espaço vazio chega aos painéis por um gancho de baixo nível (realce e cliques), e um clique num ícone é só do ícone:
   - **Servidores** — estado e tempo de resposta (ping; se não responder, testa a porta TCP). Clicar abre o RDP, o SSH (PuTTY) ou a página.
   - **Hoje** — as reuniões do dia no Outlook clássico (só lê se o Outlook já estiver aberto), com “daqui a X min”.
   - **Rede** — VPN do Windows ligada e há quanto tempo, com interruptor; se nenhuma estiver ligada, lista-as para ligar com um clique. IP público e latência da internet. **Avisa quando a VPN cai** sem teres sido tu.

@@ -88,7 +88,7 @@ class Musica
                 { "capa", capa }, { "aTocar", aTocar }, { "pos", Math.Round(Math.Max(0, Math.Min(pos, dur))) }, { "dur", Math.Round(dur) }
             };
         }
-        string j = P.Json.Serialize(d);
+        string j = Lumen.Json.Serialize(d);
         if (j != ultimoEnvio) { ultimoEnvio = j; publicar(d); }
     }
 

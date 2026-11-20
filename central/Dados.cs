@@ -1,4 +1,4 @@
-﻿// Recolha dos dados mostrados nos painéis. Cada fonte corre na sua thread e envia
+// Recolha dos dados mostrados nos painéis. Cada fonte corre na sua thread e envia
 // mensagens {tipo: ...} para a página quando muda.
 using System;
 using System.Collections.Generic;
@@ -29,8 +29,7 @@ class Dados
 
     public void Iniciar()
     {
-        Publicar("atalhos", P.Lista("atalhos").Select(a => (object)new Dictionary<string, object> {
-            { "nome", P.S(a, "nome") }, { "icone", P.S(a, "icone") }, { "acao", P.S(a, "acao") } }).ToArray());
+        PublicarAtalhos();
         Ciclo("servidores", 30000, LerServidores);
         Ciclo("rede", 30000, LerRede);
         Ciclo("tempo", 300000, LerTempo);
@@ -43,6 +42,20 @@ class Dados
     }
 
     public void Parar() { parar = true; }
+
+    void PublicarAtalhos()
+    {
+        Publicar("atalhos", P.Lista("atalhos").Select(a => (object)new Dictionary<string, object> {
+            { "nome", P.S(a, "nome") }, { "icone", P.S(a, "icone") }, { "acao", P.S(a, "acao") } }).ToArray());
+    }
+
+    // A configuração mudou: atalhos de novo e servidores lidos já (não à espera do ciclo).
+    public void Recarregar()
+    {
+        PublicarAtalhos();
+        new Thread(() => { try { Publicar("servidores", LerServidores()); } catch (Exception e) { P.Log("servidores: " + e.Message); } }) { IsBackground = true }.Start();
+        EnviarTudo();
+    }
 
     void Ciclo(string nome, int ms, Func<object> ler)
     {
@@ -80,10 +93,13 @@ class Dados
         {
             var s = lista[i];
             long ms; bool ok = Testar(P.S(s, "host"), P.S(s, "porta"), out ms);
-            res[i] = new Dictionary<string, object> { { "nome", P.S(s, "nome") }, { "sub", P.S(s, "sub") }, { "ok", ok }, { "ms", ok ? ms : -1 }, { "acao", P.S(s, "acao") } };
+            res[i] = new Dictionary<string, object> { { "nome", P.S(s, "nome") }, { "sub", P.S(s, "sub") }, { "ok", ok }, { "ms", ok ? ms : -1 }, { "acao", Acao(P.S(s, "acao"), P.S(s, "host")) } };
         });
         return res;
     }
+
+    // "rdp:" ou "ssh:" sem destino = o endereço do próprio servidor.
+    static string Acao(string acao, string host) { return acao == "rdp:" || acao == "ssh:" ? acao + host : acao; }
 
     static bool Testar(string host, string porta, out long ms)
     {
@@ -133,29 +149,13 @@ class Dados
         return new Dictionary<string, object> { { "internet", ok }, { "ms", ms }, { "ip", ipPublico } };
     }
 
-    // ------------------------------------------------ tempo (o mesmo do widget do Atrium)
+    // ------------------------------------------------ tempo (o mesmo do widget da barra; a página traduz o código)
     object LerTempo()
     {
-        var f = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"Atrium\weather.json");
+        var f = Path.Combine(Lumen.Dados, "weather.json");
         if (!File.Exists(f)) return null;
-        var d = P.Json.Deserialize<Dictionary<string, object>>(File.ReadAllText(f));
-        int code = Convert.ToInt32(d["code"]);
-        return new Dictionary<string, object> { { "cidade", P.S(d, "city") }, { "temp", Math.Round(Convert.ToDouble(d["temp"])) }, { "ceu", Ceu(code) } };
-    }
-
-    static string Ceu(int c)
-    {
-        if (c == 0) return "céu limpo";
-        if (c <= 2) return "pouco nublado";
-        if (c == 3) return "nublado";
-        if (c == 45 || c == 48) return "nevoeiro";
-        if (c >= 51 && c <= 57) return "chuvisco";
-        if (c == 61 || c == 80) return "chuva fraca";
-        if (c == 63 || c == 81) return "chuva";
-        if (c == 65 || c == 82 || c == 66 || c == 67) return "chuva forte";
-        if (c >= 71 && c <= 77 || c == 85 || c == 86) return "neve";
-        if (c >= 95) return "trovoada";
-        return "";
+        var d = Lumen.Json.Deserialize<Dictionary<string, object>>(File.ReadAllText(f));
+        return new Dictionary<string, object> { { "cidade", P.S(d, "city") }, { "temp", Math.Round(Convert.ToDouble(d["temp"])) }, { "codigo", Convert.ToInt32(d["code"]) } };
     }
 
     // ------------------------------------------------ VPN (RAS do Windows)
@@ -174,7 +174,9 @@ class Dados
                 {
                     // caiu sem ter sido eu a desligar
                     if (lig == "" && vpnLigada != "" && !oc.ContainsKey(vpnLigada) && (DateTime.Now - vpnDesligueiEm).TotalSeconds > 30)
-                        Avisar("VPN desligada", "A VPN «" + vpnLigada + "» caiu" + (vpnDesde != DateTime.MinValue ? " ao fim de " + Duracao(DateTime.Now - vpnDesde) : "") + ".");
+                        Avisar(Lumen.T("VPN desligada", "VPN disconnected", "VPN desconectada"),
+                            string.Format(Lumen.T("A VPN «{0}» caiu{1}.", "The VPN “{0}” dropped{1}.", "La VPN «{0}» se ha caído{1}."), vpnLigada,
+                                vpnDesde != DateTime.MinValue ? Lumen.T(" ao fim de ", " after ", " tras ") + Duracao(DateTime.Now - vpnDesde) : ""));
                     vpnLigada = lig; vpnDesde = lig == "" ? DateTime.MinValue : DateTime.Now;
                 }
                 Publicar("vpn", new Dictionary<string, object> {
@@ -196,7 +198,7 @@ class Dados
     {
         if (string.IsNullOrEmpty(nome)) return;
         if (!ligar) vpnDesligueiEm = DateTime.Now;
-        lock (vpnOcupada) vpnOcupada[nome] = ligar ? "a ligar…" : "a desligar…";
+        lock (vpnOcupada) vpnOcupada[nome] = ligar ? "ligar" : "desligar";
         acordarVpn.Set();
         new Thread(() =>
         {

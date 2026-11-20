@@ -1,19 +1,25 @@
 <!doctype html>
-<html lang="pt"><head><meta charset="utf-8"><title>Central</title>
+<html lang="pt"><head><meta charset="utf-8"><title>Lumen Central</title>
 <style>
-:root{--g:rgba(10,30,20,.40);--b:rgba(255,255,255,.14);--t:#eafff2;--m:rgba(234,255,242,.62);--ok:#7dffb0;--warn:#ffd36b;--bad:#ff7a7a}
+:root{--g:rgba(10,30,20,.40);--b:rgba(255,255,255,.14);--t:#eafff2;--m:rgba(234,255,242,.62);--ok:#7dffb0;--warn:#ffd36b;--bad:#ff7a7a;--tile:rgba(255,255,255,.06);--tileB:rgba(255,255,255,.08);--hov:rgba(255,255,255,.13)}
+body.claro{--b:rgba(20,34,51,.12);--ok:#13985a;--warn:#b7791f;--bad:#d64545;--tile:rgba(255,255,255,.42);--tileB:rgba(20,34,51,.08);--hov:rgba(255,255,255,.7)}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:100%;height:100%;overflow:hidden;user-select:none;cursor:default}
 body{font-family:"Segoe UI Variable Display","Segoe UI",sans-serif;color:var(--t);background:#06170f no-repeat;-webkit-font-smoothing:antialiased}
-.panel{position:absolute;border-radius:28px;background:var(--g);border:1px solid var(--b);backdrop-filter:blur(26px) saturate(140%);box-shadow:0 14px 34px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.12);padding:26px 28px;margin:40px 0 0 40px}
+.wrap{position:absolute;left:0;top:180px;padding:40px;display:flex;flex-direction:column;gap:20px}
+.wrap.sem-data{top:0}
+.row{display:flex;gap:20px;align-items:flex-start}
+.row:empty{display:none}
+.panel{border-radius:28px;background:var(--g);border:1px solid var(--b);backdrop-filter:blur(26px) saturate(140%);box-shadow:0 14px 34px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.12);padding:26px 28px;flex:none}
+.panel.off,.date.off{display:none}
 h3{font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--m);margin-bottom:16px;display:flex;align-items:center;gap:10px}
 h3 span{margin-left:auto;font-size:12px;letter-spacing:0;text-transform:none;font-weight:400}
 .date{position:absolute;left:40px;top:56px}
 .date .d{font-size:96px;font-weight:200;letter-spacing:-.02em;line-height:1}
 .date .sub{font-size:26px;font-weight:300;color:var(--m);margin-top:10px}
 .srv{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-.s{border-radius:18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);padding:14px 16px;transition:background .15s,transform .15s}
-.s[data-acao]:hover,.sh a:hover,.chip:hover,.s[data-acao].hov,.sh a.hov,.chip.hov{background:rgba(255,255,255,.13);transform:translateY(-1px)}
+.s{border-radius:18px;background:var(--tile);border:1px solid var(--tileB);padding:14px 16px;transition:background .15s,transform .15s}
+.s[data-acao]:hover,.sh a:hover,.chip:hover,.s[data-acao].hov,.sh a.hov,.chip.hov,.vazio[data-acao].hov,.vazio[data-acao]:hover{background:var(--hov);transform:translateY(-1px)}
 .s b{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden}
 .s b:before{content:"";flex:none;width:9px;height:9px;border-radius:50%;background:var(--m);opacity:.5}
 .s.ok b:before{background:var(--ok);box-shadow:0 0 12px var(--ok);opacity:1}
@@ -23,15 +29,16 @@ h3 span{margin-left:auto;font-size:12px;letter-spacing:0;text-transform:none;fon
 .s small{display:flex;font-size:12px;color:var(--m);margin-top:6px;white-space:nowrap}
 .s small span{overflow:hidden;text-overflow:ellipsis;margin-right:8px}.s small em{margin-left:auto;flex:none;font-style:normal;font-variant-numeric:tabular-nums}
 .ag{display:flex;flex-direction:column;gap:12px}
-.ev{display:flex;gap:14px;align-items:center;border-radius:16px;padding:12px 14px;background:rgba(255,255,255,.05)}
+.ev{display:flex;gap:14px;align-items:center;border-radius:16px;padding:12px 14px;background:var(--tile)}
 .ev.now{background:rgba(125,255,176,.12);border:1px solid rgba(125,255,176,.3)}
 .ev.past{opacity:.45}
 .ev .h{font-size:20px;font-weight:300;width:62px;flex:none;font-variant-numeric:tabular-nums}
 .ev .t{font-size:15px;font-weight:600;min-width:0}.ev .t small{display:block;font-weight:400;color:var(--m);font-size:12px;margin-top:2px}
 .ev .t,.ev .t small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.vazio{font-size:14px;color:var(--m);padding:10px 2px}
+.vazio{font-size:14px;color:var(--m);padding:10px 2px;border-radius:14px}
+.vazio[data-acao]{padding:14px 16px;background:var(--tile);cursor:pointer}
 .net{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.k{border-radius:16px;background:rgba(255,255,255,.05);padding:14px 16px;min-width:0}
+.k{border-radius:16px;background:var(--tile);padding:14px 16px;min-width:0}
 .k small{font-size:12px;color:var(--m)} .k div{font-size:22px;font-weight:300;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .vpn{grid-column:1/3;display:flex;align-items:center;gap:14px}
 .vpn.on{background:rgba(125,255,176,.1);border:1px solid rgba(125,255,176,.25)}
@@ -39,80 +46,118 @@ h3 span{margin-left:auto;font-size:12px;letter-spacing:0;text-transform:none;fon
 .vpn .sw:after{content:"";position:absolute;left:3px;top:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:left .2s}
 .vpn.on .sw{background:var(--ok)} .vpn.on .sw:after{left:25px}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.chip{font-size:12px;padding:5px 10px;border-radius:10px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);transition:background .15s}
-.sh{display:flex;gap:12px;flex-wrap:wrap}
-.sh a{width:84px;height:84px;border-radius:22px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font-size:12px;transition:background .15s,transform .15s}
-.sh a svg{width:28px;height:28px;stroke:var(--t);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
+.chip{font-size:12px;padding:5px 10px;border-radius:10px;background:var(--tile);border:1px solid var(--tileB);transition:background .15s}
+.sh{display:flex;gap:12px;flex-wrap:wrap;max-width:344px}
+.sh a{width:76px;height:84px;border-radius:22px;background:var(--tile);border:1px solid var(--tileB);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font-size:12px;transition:background .15s,transform .15s;text-align:center;overflow:hidden;padding:0 4px}
+.sh a span{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sh a svg{width:28px;height:28px;stroke:var(--t);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;opacity:.9;flex:none}
 .mus{display:flex;gap:16px;align-items:center}
-.capa{width:84px;height:84px;flex:none;border-radius:16px;background:linear-gradient(135deg,#3a8055,#0d2c1d) center/cover}
+.capa{width:84px;height:84px;flex:none;border-radius:16px;background:linear-gradient(135deg,var(--acc1,#3a8055),var(--acc2,#0d2c1d)) center/cover}
 .mus .tt{font-size:18px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mus .ar{color:var(--m);font-size:14px;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.prog{margin-top:12px;height:4px;border-radius:2px;background:rgba(255,255,255,.2)} .prog i{display:block;height:4px;border-radius:2px;background:#fff;width:0}
+.prog{margin-top:12px;height:4px;border-radius:2px;background:rgba(127,127,127,.3)} .prog i{display:block;height:4px;border-radius:2px;background:var(--t);width:0}
 .ctl{display:flex;gap:6px;margin-top:10px}
-.ctl button{width:34px;height:34px;border-radius:50%;border:0;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center}
-.ctl button:hover,.ctl button.hov{background:rgba(255,255,255,.2)}
+.ctl button{width:34px;height:34px;border-radius:50%;border:0;background:var(--tile);display:flex;align-items:center;justify-content:center}
+.ctl button:hover,.ctl button.hov{background:var(--hov)}
 .ctl svg{width:16px;height:16px;fill:var(--t)}
 [data-acao],[data-vpn],.ctl button{cursor:pointer}
 </style></head><body>
 
-<div class="date"><div class="d" id="dia">&nbsp;</div><div class="sub" id="sub">&nbsp;</div></div>
+<div class="date" id="pData"><div class="d" id="dia">&nbsp;</div><div class="sub" id="sub">&nbsp;</div></div>
 
-<div class="panel" style="left:0;top:220px;width:820px"><h3>Servidores <span id="srvResumo"></span></h3><div class="srv" id="srv"></div></div>
-<div class="panel" style="left:840px;top:220px;width:470px"><h3>Hoje <span>Outlook</span></h3><div class="ag" id="ag"><div class="vazio">A ler a agenda…</div></div></div>
-<div class="panel" style="left:0;top:560px;width:400px"><h3>Rede</h3><div class="net">
- <div class="k vpn" id="vpn"><div style="min-width:0"><small>VPN</small><div id="vpnNome" style="font-size:18px;font-weight:600">—</div><small id="vpnInfo"></small><div class="chips" id="vpnChips"></div></div><div class="sw" id="vpnSw"></div></div>
- <div class="k"><small>IP público</small><div id="ip">—</div></div>
- <div class="k"><small>Internet</small><div id="inet">—</div></div>
-</div></div>
-<div class="panel" style="left:420px;top:560px;width:400px"><h3>Atalhos</h3><div class="sh" id="sh"></div></div>
-<div class="panel" style="left:840px;top:560px;width:470px"><h3>A tocar</h3>
- <div class="mus"><div class="capa" id="capa"></div><div style="min-width:0;flex:1"><div class="tt" id="tt">Nada a tocar</div><div class="ar" id="ar">&nbsp;</div>
- <div class="prog"><i id="pr"></i></div>
- <div class="ctl"><button data-m="prev" aria-label="Anterior"><svg viewBox="0 0 24 24"><path d="M6 5h2v14H6zM20 5v14L9 12z"/></svg></button><button data-m="play" aria-label="Tocar ou pausar"><svg viewBox="0 0 24 24" id="playIco"><path d="M7 4v16l13-8z"/></svg></button><button data-m="next" aria-label="Seguinte"><svg viewBox="0 0 24 24"><path d="M16 5h2v14h-2zM4 5v14l11-7z"/></svg></button></div>
- </div></div>
+<div class="wrap" id="wrap">
+ <div class="row">
+  <div class="panel" id="pServidores" style="width:820px"><h3><b data-t="servidores"></b> <span id="srvResumo"></span></h3><div class="srv" id="srv"></div></div>
+  <div class="panel" id="pHoje" style="width:470px"><h3><b data-t="hoje"></b> <span>Outlook</span></h3><div class="ag" id="ag"><div class="vazio" data-t="aLer"></div></div></div>
+ </div>
+ <div class="row">
+  <div class="panel" id="pRede" style="width:400px"><h3 data-t="rede"></h3><div class="net">
+   <div class="k vpn" id="vpn"><div style="min-width:0"><small>VPN</small><div id="vpnNome" style="font-size:18px;font-weight:600">—</div><small id="vpnInfo"></small><div class="chips" id="vpnChips"></div></div><div class="sw" id="vpnSw"></div></div>
+   <div class="k"><small data-t="ip"></small><div id="ip">—</div></div>
+   <div class="k"><small>Internet</small><div id="inet">—</div></div>
+  </div></div>
+  <div class="panel" id="pAtalhos" style="width:400px"><h3 data-t="atalhos"></h3><div class="sh" id="sh"></div></div>
+  <div class="panel" id="pMusica" style="width:470px"><h3 data-t="aTocar"></h3>
+   <div class="mus"><div class="capa" id="capa"></div><div style="min-width:0;flex:1"><div class="tt" id="tt"></div><div class="ar" id="ar">&nbsp;</div>
+   <div class="prog"><i id="pr"></i></div>
+   <div class="ctl"><button data-m="prev"><svg viewBox="0 0 24 24"><path d="M6 5h2v14H6zM20 5v14L9 12z"/></svg></button><button data-m="play"><svg viewBox="0 0 24 24" id="playIco"><path d="M7 4v16l13-8z"/></svg></button><button data-m="next"><svg viewBox="0 0 24 24"><path d="M16 5h2v14h-2zM4 5v14l11-7z"/></svg></button></div>
+   </div></div>
+  </div>
+ </div>
 </div>
 
 <script>
 const $=id=>document.getElementById(id);
 const post=o=>window.chrome.webview.postMessage(o);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let L='pt';
+const TXT={
+ servidores:['Servidores','Servers','Servidores'],hoje:['Hoje','Today','Hoy'],rede:['Rede','Network','Red'],atalhos:['Atalhos','Shortcuts','Accesos'],aTocar:['A tocar','Now playing','Sonando'],
+ aLer:['A ler a agenda…','Reading your calendar…','Leyendo la agenda…'],ip:['IP público','Public IP','IP pública'],
+ aResponder:['{0} de {1} a responder','{0} of {1} responding','{0} de {1} responden'],semResposta:['sem resposta','no answer','sin respuesta'],
+ semServidores:['Adiciona os teus servidores no Painel do Lumen.','Add your servers in the Lumen Panel.','Añade tus servidores en el Panel de Lumen.'],
+ semAtalhos:['Adiciona atalhos no Painel do Lumen.','Add shortcuts in the Lumen Panel.','Añade accesos en el Panel de Lumen.'],
+ abreOutlook:['Abre o Outlook para veres as reuniões de hoje.','Open Outlook to see today’s meetings.','Abre Outlook para ver las reuniones de hoy.'],
+ semReunioes:['Sem reuniões hoje.','No meetings today.','Sin reuniones hoy.'],daqui:['daqui a {0}','in {0}','dentro de {0}'],decorrer:['a decorrer até {0}','until {0}','hasta las {0}'],
+ semLigacao:['sem ligação','offline','sin conexión'],desligada:['Desligada','Disconnected','Desconectada'],ligadaHa:['ligada há {0}','connected for {0}','conectada hace {0}'],
+ escolhe:['escolhe uma para ligar','pick one to connect','elige una para conectar'],ligar:['a ligar…','connecting…','conectando…'],desligar:['a desligar…','disconnecting…','desconectando…'],
+ nada:['Nada a tocar','Nothing playing','No se reproduce nada'],
+ c0:['céu limpo','clear sky','despejado'],c1:['pouco nublado','partly cloudy','poco nuboso'],c3:['nublado','cloudy','nublado'],c45:['nevoeiro','fog','niebla'],c51:['chuvisco','drizzle','llovizna'],
+ c61:['chuva fraca','light rain','lluvia débil'],c63:['chuva','rain','lluvia'],c65:['chuva forte','heavy rain','lluvia fuerte'],c71:['neve','snow','nieve'],c95:['trovoada','thunderstorm','tormenta']
+};
+const t=(k,...a)=>{const v=TXT[k];let s=v?v[L==='pt'?0:L==='es'?2:1]:k;a.forEach((x,i)=>s=s.replace('{'+i+'}',x));return s};
+const LOC={pt:'pt-PT',en:'en-GB',es:'es-ES'};
 const ICONES={server:'<rect x="4" y="4" width="16" height="7" rx="2"/><rect x="4" y="13" width="16" height="7" rx="2"/><path d="M8 7.5h.01M8 16.5h.01"/>',
  phone:'<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>',
  camera:'<path d="M15 10l4.5-2.5v9L15 14"/><rect x="3" y="6" width="12" height="12" rx="2"/>',
  home:'<path d="M5 12l7-7 7 7M7 10v9h10v-9"/>',shield:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/>',
  globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
  terminal:'<path d="M5 7l5 5-5 5M12 19h7"/>',mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
- db:'<ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v12c0 1.7 3 3 7 3s7-1.3 7-3V6M5 12c0 1.7 3 3 7 3s7-1.3 7-3"/>'};
-const DIAS=['domingo','segunda','terça','quarta','quinta','sexta','sábado'];
-const MESES=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
-let tempo='',cfgAtalhos=[];
+ db:'<ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v12c0 1.7 3 3 7 3s7-1.3 7-3V6M5 12c0 1.7 3 3 7 3s7-1.3 7-3"/>',
+ folder:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+ gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
+ music:'<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
+ code:'<path d="M8 6l-6 6 6 6M16 6l6 6-6 6"/>',chart:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>'};
+let tempo=null,ultimo={};
 
-function relogio(){const d=new Date();$('dia').textContent=DIAS[d.getDay()]+', '+d.getDate();$('sub').textContent=MESES[d.getMonth()]+(tempo?' · '+tempo:'');}
+function traduzir(){document.querySelectorAll('[data-t]').forEach(e=>e.textContent=t(e.dataset.t));if(!ultimo.musica||!ultimo.musica.tem)$('tt').textContent=t('nada');}
+function ceu(c){if(c==0)return t('c0');if(c<=2)return t('c1');if(c==3)return t('c3');if(c==45||c==48)return t('c45');if(c>=51&&c<=57)return t('c51');if(c==61||c==80)return t('c61');if(c==63||c==81)return t('c63');if(c==65||c==82||c==66||c==67)return t('c65');if((c>=71&&c<=77)||c==85||c==86)return t('c71');if(c>=95)return t('c95');return ''}
+function relogio(){const d=new Date(),loc=LOC[L];let dia=d.toLocaleDateString(loc,{weekday:'long'});if(L==='pt')dia=dia.replace('-feira','');
+ if(L!=='pt')dia=dia.charAt(0).toUpperCase()+dia.slice(1);
+ $('dia').textContent=dia+', '+d.getDate();let mes=d.toLocaleDateString(loc,{month:'long'});if(L!=='pt')mes=mes.charAt(0).toUpperCase()+mes.slice(1);
+ $('sub').textContent=mes+(tempo?' · '+tempo.temp+'° '+ceu(tempo.codigo):'');}
 setInterval(relogio,30000);relogio();
 
 function dur(s){s=Math.max(0,Math.round(s));const h=Math.floor(s/3600),m=Math.floor(s%3600/60);return h?h+' h '+m+' min':m+' min';}
-function mmss(s){s=Math.max(0,Math.round(s||0));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
 
 const H={
- fundo(m){const b=document.body.style;b.backgroundImage=`url("${m.url}")`;b.backgroundPosition=`${-m.x}px ${-m.y}px`;b.backgroundSize=`${m.w}px ${m.h}px`;},
- servidores(l){const ok=l.filter(s=>s.ok).length;$('srvResumo').textContent=ok+' de '+l.length+' a responder';
-  $('srv').innerHTML=l.map(s=>{const c=!s.ok?'x':s.ms>150?'w':'ok';return `<div class="s ${c}" ${s.acao?`data-acao="${esc(s.acao)}"`:''}><b>${esc(s.nome)}</b><small><span>${esc(s.sub)}</span><em>${s.ok?(s.ms<1?'&lt;1':s.ms)+' ms':'sem resposta'}</em></small></div>`}).join('');},
- agenda(a){const el=$('ag');if(!a.aberto){el.innerHTML='<div class="vazio">Abre o Outlook para veres as reuniões de hoje.</div>';return}
-  if(!a.eventos.length){el.innerHTML='<div class="vazio">Sem reuniões hoje.</div>';return}
+ config(m){L=m.idioma||'pt';document.documentElement.lang=L;const tm=m.tema||{};const r=document.documentElement.style;
+  if(tm.vidro){r.setProperty('--g',tm.vidro);r.setProperty('--t',tm.texto);r.setProperty('--m',tm.suave);r.setProperty('--acc1',tm.luz[4]);r.setProperty('--acc2',tm.base[6]);}
+  document.body.classList.toggle('claro',!!tm.claro);
+  const p=m.paineis||{};const map={data:'pData',servidores:'pServidores',hoje:'pHoje',rede:'pRede',atalhos:'pAtalhos',musica:'pMusica'};
+  for(const k in map)$(map[k]).classList.toggle('off',p[k]===false);
+  $('wrap').classList.toggle('sem-data',p.data===false);
+  traduzir();relogio();for(const k in ultimo)if(H[k]&&k!=='config')H[k](ultimo[k]);},
+ fundo(m){const b=document.body.style;b.backgroundImage=m.url?`url("${m.url}")`:'none';b.backgroundPosition=`${-m.x}px ${-m.y}px`;b.backgroundSize=`${m.w}px ${m.h}px`;},
+ servidores(l){if(!l.length){$('srvResumo').textContent='';$('srv').style.display='block';$('srv').innerHTML=`<div class="vazio" data-acao="lumen:painel">${t('semServidores')}</div>`;return}
+  $('srv').style.display='';const ok=l.filter(s=>s.ok).length;$('srvResumo').textContent=t('aResponder',ok,l.length);
+  $('srv').innerHTML=l.map(s=>{const c=!s.ok?'x':s.ms>150?'w':'ok';return `<div class="s ${c}" ${s.acao?`data-acao="${esc(s.acao)}"`:''}><b>${esc(s.nome)}</b><small><span>${esc(s.sub)}</span><em>${s.ok?(s.ms<1?'&lt;1':s.ms)+' ms':t('semResposta')}</em></small></div>`}).join('');},
+ agenda(a){const el=$('ag');if(!a.aberto){el.innerHTML=`<div class="vazio">${t('abreOutlook')}</div>`;return}
+  if(!a.eventos.length){el.innerHTML=`<div class="vazio">${t('semReunioes')}</div>`;return}
   let prox=a.eventos.findIndex(e=>e.b>0);
   el.innerHTML=a.eventos.map((e,i)=>{const now=i===prox,past=e.b<=0;let info=esc(e.local);
-   if(now){const q=e.a>0?'daqui a '+dur(e.a*60):'a decorrer até '+e.fim;info=q+(e.local?' · '+esc(e.local):'');}
+   if(now){const q=e.a>0?t('daqui',dur(e.a*60)):t('decorrer',e.fim);info=q+(e.local?' · '+esc(e.local):'');}
    return `<div class="ev ${now?'now':''} ${past?'past':''}"><div class="h">${e.ini}</div><div class="t">${esc(e.titulo)}<small>${info||'&nbsp;'}</small></div></div>`}).slice(Math.max(0,prox-1),Math.max(0,prox-1)+4).join('');},
- rede(r){$('ip').textContent=r.ip||'—';$('inet').textContent=r.internet?r.ms+' ms':'sem ligação';},
+ rede(r){$('ip').textContent=r.ip||'—';$('inet').textContent=r.internet?r.ms+' ms':t('semLigacao');},
  vpn(v){const on=!!v.ligada,ocup=v.ocupada||{};const el=$('vpn');el.classList.toggle('on',on);
   const nomeOcup=Object.keys(ocup)[0];
-  $('vpnNome').textContent=on?v.ligada:(nomeOcup||'Desligada');
-  $('vpnInfo').textContent=nomeOcup?ocup[nomeOcup]:on?'ligada há '+dur(v.desde):'escolhe uma para ligar';
+  $('vpnNome').textContent=on?v.ligada:(nomeOcup||t('desligada'));
+  $('vpnInfo').textContent=nomeOcup?t(ocup[nomeOcup]):on?t('ligadaHa',dur(v.desde)):(v.entradas.length?t('escolhe'):'');
   $('vpnSw').dataset.vpn=on?v.ligada:'';$('vpnSw').style.visibility=on?'visible':'hidden';
   $('vpnChips').innerHTML=on||nomeOcup?'':v.entradas.map(n=>`<span class="chip" data-vpn="${esc(n)}" data-ligar="1">${esc(n)}</span>`).join('');},
- tempo(t){tempo=t.temp+'° '+t.ceu;relogio();},
- atalhos(l){cfgAtalhos=l;$('sh').innerHTML=l.map(a=>`<a data-acao="${esc(a.acao)}"><svg viewBox="0 0 24 24">${ICONES[a.icone]||ICONES.globe}</svg>${esc(a.nome)}</a>`).join('');},
- musica(m){if(!m.tem){$('tt').textContent='Nada a tocar';$('ar').innerHTML='&nbsp;';$('capa').style.backgroundImage='';$('pr').style.width=0;return}
+ tempo(x){tempo=x;relogio();},
+ atalhos(l){$('sh').innerHTML=l.length?l.map(a=>`<a data-acao="${esc(a.acao)}"><svg viewBox="0 0 24 24">${ICONES[a.icone]||ICONES.globe}</svg><span>${esc(a.nome)}</span></a>`).join(''):`<div class="vazio" data-acao="lumen:painel">${t('semAtalhos')}</div>`;},
+ musica(m){if(!m.tem){$('tt').textContent=t('nada');$('ar').innerHTML='&nbsp;';$('capa').style.backgroundImage='';$('pr').style.width=0;return}
   $('tt').textContent=m.titulo;$('ar').textContent=m.artista;$('capa').style.backgroundImage=m.capa?`url("${m.capa}")`:'';
   $('pr').style.width=(m.dur?100*m.pos/m.dur:0)+'%';
   $('playIco').innerHTML=m.aTocar?'<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>':'<path d="M7 4v16l13-8z"/>';}
@@ -121,17 +166,20 @@ const H={
 let hovEl=null;
 function Rato(m){
  if(m.ev==='sair'){if(hovEl){hovEl.classList.remove('hov');hovEl=null}return}
- const t=document.elementFromPoint(m.x,m.y);
- const el=t&&t.closest('[data-acao],[data-vpn],[data-m]');
+ const el0=document.elementFromPoint(m.x,m.y);
+ const el=el0&&el0.closest('[data-acao],[data-vpn],[data-m]');
  if(m.ev==='mover'){if(el!==hovEl){if(hovEl)hovEl.classList.remove('hov');hovEl=el;if(el)el.classList.add('hov')}}
- else if(m.ev==='clique'&&t)t.dispatchEvent(new MouseEvent('click',{bubbles:true,clientX:m.x,clientY:m.y}));
+ else if(m.ev==='clique'&&el0)el0.dispatchEvent(new MouseEvent('click',{bubbles:true,clientX:m.x,clientY:m.y}));
 }
-window.chrome.webview.addEventListener('message',e=>{const m=e.data;if(m.tipo==='fundo')H.fundo(m);else if(m.tipo==='rato')Rato(m);else if(H[m.tipo])H[m.tipo](m.dados);});
+window.chrome.webview.addEventListener('message',e=>{const m=e.data;
+ if(m.tipo==='fundo')H.fundo(m);else if(m.tipo==='rato')Rato(m);else if(m.tipo==='config')H.config(m);
+ else if(H[m.tipo]){ultimo[m.tipo]=m.dados;H[m.tipo](m.dados);}});
 document.addEventListener('click',e=>{
- const a=e.target.closest('[data-acao]');if(a){post({acao:'abrir',alvo:a.dataset.acao});return}
+ const a=e.target.closest('[data-acao]');if(a){if(a.dataset.acao==='lumen:painel')post({acao:'painel'});else post({acao:'abrir',alvo:a.dataset.acao});return}
  const v=e.target.closest('[data-vpn]');if(v&&v.dataset.vpn){post({acao:'vpn',nome:v.dataset.vpn,ligar:v.dataset.ligar?'True':'False'});return}
  const b=e.target.closest('[data-m]');if(b)post({acao:'media',cmd:b.dataset.m});
 });
 document.addEventListener('contextmenu',e=>e.preventDefault());
+traduzir();
 post({acao:'pronto'});
 </script></body></html>

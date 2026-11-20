@@ -1,94 +1,101 @@
-# Windows 2.0
+<p align="center"><img src="marca/lumen-banner.png" alt="Lumen" width="760"></p>
 
-O meu Windows 11 com outra cara: uma barra de vidro ao estilo macOS no lugar da barra de tarefas, a VPN à distância de um clique, um widget do Spotify, contadores de mensagens nos ícones, fundos vetoriais próprios e cursores sem cauda.
+<p align="center">
+  <a href="https://github.com/Gleite05/Lumen/releases/latest"><b>⬇ Descarregar o Lumen</b></a> ·
+  <a href="#english">English</a> ·
+  <a href="#español">Español</a>
+</p>
 
-Tudo corre **sem direitos de administrador**, numa conta normal (até num PC de domínio).
+**O Lumen transforma o Windows 11 (e 10) num ambiente de trabalho de vidro, vivo e teu.** Instalas, escolhes um tema e o PC muda: uma barra de vidro no lugar da barra de tarefas, um fundo que conta as horas do teu dia de trabalho e painéis úteis no próprio ambiente de trabalho. E com um clique voltas ao Windows de sempre.
 
-![O ambiente de trabalho com o Central](capturas/central.png)
+- **Sem direitos de administrador**: instala-se só para o teu utilizador (até num PC de empresa).
+- **Totalmente personalizável** no **Painel do Lumen**: tema, fundo, cursores, painéis, horário, servidores, atalhos, notificações, idioma.
+- **Em português, inglês e espanhol.**
 
-O fundo é um relógio disfarçado: as camadas acendem-se ao longo do horário de trabalho.
+![O Painel do Lumen](capturas/painel-inicio.png)
 
-![O fundo às 9:00, 11:40, 15:15 e 18:00](capturas/fundo-ao-longo-do-dia.png)
+## O que traz
 
-<sub>Capturas com dados de exemplo.</sub>
-
----
-
-## O que está cá dentro
-
-| Pasta | O que é |
+| | |
 |---|---|
-| [`atrium-desktop/`](https://github.com/Gleite05/atrium-desktop/tree/vpn) | A barra **Atrium** modificada (submódulo → fork `Gleite05/atrium-desktop`, ramo `vpn`). |
-| [`atrium/`](atrium/) | As minhas definições do Atrium (vidro, tamanhos, widgets à direita…). |
-| [`central/`](central/) | **Central**: o fundo de ecrã vira central de controlo — as camadas acendem-se com as horas de trabalho (só tu sabes) e por cima há painéis de servidores, agenda do Outlook, VPN, atalhos e música. Também guarda as definições do Atrium. |
-| [`modo-windows/`](modo-windows/) | Atalho **Modo Windows original** no ambiente de trabalho: um clique e volta tudo ao Windows de origem (barra, fundo, cursores, sem widgets); outro clique e volta o Windows 2.0. |
-| [`barra-oculta/`](barra-oculta/) | **BarraOculta**: esconde de vez a barra do Windows; `Ctrl+Alt+B` mostra-a. |
-| [`fundos/`](fundos/) | 6 fundos vetoriais 3840×2400 (Esmeralda, Oceano, Glaciar, Índigo, Âmbar, Grafite) e o gerador em Python. |
-| [`cursores/`](cursores/) | Cursores **Fluent Escuro** e **Fluent Claro** (seta sem cauda, estilo Windows 11) e o gerador. |
-| [`ajustes/`](ajustes/) | Ajustes do registo (desligar a intermitência da barra do Windows). |
-| [`vpn-painel/`](vpn-painel/) | Versão antiga da VPN (ícone + painel à parte). Ficou como alternativa; a VPN agora vive dentro do Atrium. |
-| [`instalar.ps1`](instalar.ps1) | Instala tudo de uma vez. |
+| **Barra de vidro** | Apps, relógio, área de notificação, VPN, widgets (tempo, sistema, música…) e um Iniciar próprio. A tecla Windows abre o Iniciar do Lumen. |
+| **Fundo vivo** | 8 camadas que se acendem de baixo para cima ao longo do teu horário de trabalho. Quem olha vê um fundo bonito; tu sabes quanto falta. |
+| **Painéis no ambiente de trabalho** | Por baixo dos ícones: servidores (ping/porta e RDP/SSH com um clique), reuniões do dia (Outlook), VPN com aviso quando cai, IP público, atalhos e o que está a tocar. |
+| **Só as notificações do Lumen** | Os avisos do Windows ficam escondidos e cada notificação aparece uma vez, num cartão de vidro. |
+| **6 temas** | Esmeralda, Oceano, Índigo, Âmbar, Grafite e Glaciar (claro), com fundos 4K a condizer. |
+| **Cursores Fluent** | Escuros ou claros, sem cauda, ao estilo do Windows 11. |
+| **Modo Windows clássico** | Um atalho no ambiente de trabalho devolve tudo ao Windows de origem; outro clique e o Lumen volta. |
+| **Controlo remoto** | A barra aparece no Chrome Remote Desktop, AnyDesk, TeamViewer, RustDesk… |
+| **Atualizações** | O Painel procura versões novas e instala-as sozinho. |
 
-### O que o Atrium modificado traz a mais
-
-- **Botão VPN na barra**, à esquerda do sino, com o desenho do Atrium. Fica com um ponto verde quando há uma VPN ligada. Clicar abre uma página no centro de controlo com todas as VPNs do Windows para ligar/desligar (usa `rasdial`; se faltarem credenciais abre a janela do Windows).
-- **Widget do Spotify** (ou de qualquer leitor): capa do álbum, música, artista, progresso e botões anterior / play / seguinte.
-- **Contadores vermelhos nos ícones** das apps: mensagens do WhatsApp, Telegram, Outlook… (conta as notificações desde a última vez que abriste a app, ou o “(N)” no título da janela).
-- **Clicar numa notificação abre a app** (antes podia fechá-la).
-- **Só as notificações do Atrium**: os avisos do Windows ficam escondidos («Não incomodar — só alarmes») e cada notificação aparece uma vez, no cartão de vidro por cima do sino.
-- **Tecla Windows abre o Iniciar do Atrium.**
-- **Arranca depois do Explorer** ao iniciar sessão — sem isto o Windows podia saltar os programas de arranque e o fundo de ecrã.
-
----
+![Temas](capturas/painel-aparencia.png)
 
 ## Instalar
 
-1. Instala o **Atrium 2.7.0 oficial**: <https://github.com/wynter-yaxley/atrium-desktop/releases>
-2. Clona este repositório e corre o instalador:
+1. Descarrega o **[Lumen-Setup](https://github.com/Gleite05/Lumen/releases/latest)** mais recente.
+2. Abre-o, escolhe o idioma, o tema e os cursores. Pronto.
 
-```powershell
-git clone --recurse-submodules https://github.com/Gleite05/Windows-2.0
-cd Windows-2.0
-powershell -ExecutionPolicy Bypass -File .\instalar.ps1
-```
+> O instalador ainda não tem assinatura digital: o Windows pode mostrar «O Windows protegeu o computador». Carrega em **Mais informações → Executar mesmo assim**.
 
-O instalador:
-- troca o `Atrium.exe` pela versão modificada (descarregada das [Releases](https://github.com/Gleite05/Windows-2.0/releases); guarda o original como `Atrium-original.exe`);
-- copia as definições do Atrium (faz cópia das tuas antes);
-- compila e põe a arrancar a **BarraOculta** (usa o `csc` do .NET Framework que já vem com o Windows);
-- compila e põe a arrancar o **Central** (descarrega o WebView2 do NuGet); o fundo passa a ser dele;
-- desliga a intermitência da barra do Windows;
-- instala os cursores **Fluent Escuro** e o fundo **Esmeralda**;
-- põe 15 s de atraso na tarefa de arranque do Atrium.
+Precisa do **Microsoft Edge WebView2 Runtime** (já vem com o Windows 11).
 
-Opções: `-SemCentral` (e então `-Fundo oceano`, `glaciar`, `indigo`, `ambar` ou `grafite` escolhe um fundo fixo), `-Cursores claro`, `-SemDefinicoes` (não mexe nas definições do Atrium), `-SemCursores`, `-SemFundo`.
+**Desinstalar**: *Definições → Aplicações → Lumen*. O Windows volta a ficar como era (barra, fundo, cursores); as tuas definições ficam em `%LOCALAPPDATA%\Lumen` para quando voltares.
 
-### Atalhos
+## Personalizar
 
-| Teclas | O quê |
+Abre **Lumen** no menu Iniciar (ou faz duplo clique no ícone do Lumen junto ao relógio):
+
+- **Aparência**: tema, fundo (vivo, imagem do tema ou o teu) e cursores.
+- **Ambiente de trabalho**: liga e desliga cada painel; horário, dias de trabalho e feriados.
+- **Servidores** e **Atalhos**: o que aparece nos painéis.
+- **Barra e notificações**: abre as definições completas da barra (vidro, tamanho, widgets, Iniciar…).
+- **Sistema**: idioma, arranque com o Windows, modo clássico.
+
+Tudo fica em `%LOCALAPPDATA%\Lumen\lumen.json` (também se pode editar à mão: o Lumen aplica as mudanças na hora).
+
+## Como é feito
+
+| Pasta | O quê |
 |---|---|
-| `Win` | Iniciar do Atrium |
-| `Ctrl+Alt+B` | Mostra a barra original do Windows (e esconde outra vez) |
+| [`central/`](central/) | **Lumen Central** (C# + WebView2): fundo vivo, painéis por baixo dos ícones, barra do Windows escondida (`Ctrl+Alt+B` mostra-a). |
+| [`painel/`](painel/) | **Painel do Lumen**: a app de personalização. |
+| [`classico/`](classico/) | **Modo Windows clássico**, primeira configuração e reposição do Windows ao desinstalar. |
+| [`comum/`](comum/) | Pastas, configuração, idiomas, temas e o que mexe no Windows. |
+| [`barra/`](barra/) | Definições de origem da barra e o script que lhe dá a marca Lumen na compilação. |
+| [`atrium-desktop/`](https://github.com/Gleite05/atrium-desktop/tree/vpn) | O motor da barra (fork do Atrium Desktop, ramo `vpn`), atualizado todas as semanas. |
+| [`instalador/`](instalador/) | Inno Setup: o instalador em PT/EN/ES. |
+| [`marca/`](marca/), [`fundos/`](fundos/), [`cursores/`](cursores/) | Logótipo, fundos 4K e cursores, com os geradores em Python. |
 
----
-
-## Compilar o Atrium modificado
-
-O código está no submódulo [`atrium-desktop`](https://github.com/Gleite05/atrium-desktop/tree/vpn). Compila sozinho no GitHub Actions (workflow `fork-build.yml`, artefacto `Atrium-exe`) — não é preciso Visual Studio no PC.
-
-Localmente: Visual Studio 2022 + CMake, `cmake --preset win-x64` e `cmake --build`.
-
-## Gerar fundos e cursores
-
-```powershell
-pip install numpy pillow scipy
-python fundos\gerador-wallpaper.py render esmeralda 3840 2400 esmeralda.png
-python cursores\gerador-cursores.py build fluent-escuro .\Fluent-Escuro
-```
-
----
+Compilar: o GitHub Actions faz tudo (`.github/workflows/lumen.yml`). Uma etiqueta `vX.Y.Z` publica a release com o instalador. Localmente, `compilar.ps1` compila as peças próprias só com o .NET Framework que vem com o Windows.
 
 ## Créditos
 
-- **Atrium Desktop** © wynter-yaxley — licença MIT. Este projeto usa um fork com alterações próprias; a licença original mantém-se no fork.
-- Tudo o resto (BarraOculta, VpnPainel, fundos, cursores, instalador) é meu, licença MIT.
+A barra de vidro é baseada no **[Atrium Desktop](https://github.com/wynter-yaxley/atrium-desktop)**, de wynter-yaxley e colaboradores (licença MIT). Ver [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
+
+Lumen © 2026 Gonçalo Leite — [MIT](LICENSE). Não é afiliado à Microsoft nem à Apple.
+
+---
+
+## English
+
+**Lumen turns Windows 11 (and 10) into a living glass desktop that is yours.** Install it, pick a theme and your PC changes: a glass bar replaces the taskbar, the wallpaper quietly counts the hours of your work day, and useful panels live on the desktop itself. One click takes you back to plain Windows.
+
+- **No admin rights** — installs for your user only (even on a work PC).
+- **Fully customizable** in the **Lumen Panel**: theme, wallpaper, cursors, panels, work hours, servers, shortcuts, notifications, language.
+- Glass bar with widgets and its own Start · live wallpaper · desktop panels (servers, Outlook meetings, VPN, shortcuts, music) · only Lumen's notifications · 6 themes · Fluent cursors · classic Windows mode · remote-control friendly · automatic updates.
+
+**Install:** download the latest **[Lumen-Setup](https://github.com/Gleite05/Lumen/releases/latest)**, run it, choose language, theme and cursors. The installer isn't code-signed yet, so Windows may show "Windows protected your PC" — click **More info → Run anyway**. Requires the Microsoft Edge WebView2 Runtime (included in Windows 11). Uninstall from *Settings → Apps → Lumen*; Windows goes back to how it was.
+
+The glass bar is based on [Atrium Desktop](https://github.com/wynter-yaxley/atrium-desktop) by wynter-yaxley and contributors (MIT). Lumen © 2026 Gonçalo Leite — MIT.
+
+## Español
+
+**Lumen convierte Windows 11 (y 10) en un escritorio de cristal, vivo y tuyo.** Lo instalas, eliges un tema y el PC cambia: una barra de cristal en lugar de la barra de tareas, un fondo que cuenta las horas de tu jornada y paneles útiles en el propio escritorio. Con un clic vuelves al Windows de siempre.
+
+- **Sin permisos de administrador**: se instala solo para tu usuario (incluso en un PC de empresa).
+- **Totalmente personalizable** en el **Panel de Lumen**: tema, fondo, cursores, paneles, horario, servidores, accesos, notificaciones, idioma.
+- Barra de cristal con widgets e Inicio propio · fondo vivo · paneles en el escritorio (servidores, reuniones de Outlook, VPN, accesos, música) · solo las notificaciones de Lumen · 6 temas · cursores Fluent · modo Windows clásico · compatible con control remoto · actualizaciones automáticas.
+
+**Instalar:** descarga el último **[Lumen-Setup](https://github.com/Gleite05/Lumen/releases/latest)**, ábrelo y elige idioma, tema y cursores. El instalador aún no está firmado: Windows puede mostrar «Windows protegió su PC» — pulsa **Más información → Ejecutar de todas formas**. Necesita Microsoft Edge WebView2 Runtime (viene con Windows 11). Se desinstala en *Configuración → Aplicaciones → Lumen*; Windows vuelve a quedar como estaba.
+
+La barra de cristal se basa en [Atrium Desktop](https://github.com/wynter-yaxley/atrium-desktop), de wynter-yaxley y colaboradores (MIT). Lumen © 2026 Gonçalo Leite — MIT.

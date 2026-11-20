@@ -1,36 +1,17 @@
-// BarraOculta — mantém a barra de tarefas do Windows escondida de vez.
+// Barra oculta — mantém a barra de tarefas do Windows escondida de vez (a do Lumen fica no lugar dela).
 // Ctrl+Alt+B mostra-a (até a usares e ela voltar a recolher); Ctrl+Alt+B outra vez esconde já.
 // Atua só nas janelas Shell_TrayWnd / Shell_SecondaryTrayWnd do explorer.exe
-// (o Atrium regista um Shell_TrayWnd próprio, que é ignorado).
-// Ao sair, a barra volta a ficar visível (em ocultar automático).
+// (a barra do Lumen regista um Shell_TrayWnd próprio, que é ignorado).
+// Ao parar, a barra do Windows volta a ficar visível (em ocultar automático).
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
 using System.Windows.Forms;
 
-static class Program
+class BarraOculta : IDisposable
 {
-    [STAThread]
-    static void Main()
-    {
-        bool created;
-        using (var m = new Mutex(true, "Local\\BarraOculta.Gleite05", out created))
-        {
-            if (!created) return;
-            Application.EnableVisualStyles();
-            Application.Run(new BarraCtx());
-        }
-    }
-}
-
-class BarraCtx : ApplicationContext
-{
-    // ---- Win32 ----
     [StructLayout(LayoutKind.Sequential)] struct RECT { public int l, t, r, b; }
     [StructLayout(LayoutKind.Sequential)] struct APPBARDATA { public int cbSize; public IntPtr hWnd; public uint cb; public uint edge; public RECT rc; public IntPtr lParam; }
     delegate bool EnumProc(IntPtr h, IntPtr l);
@@ -45,7 +26,6 @@ class BarraCtx : ApplicationContext
     [DllImport("user32.dll")] static extern bool RegisterHotKey(IntPtr h, int id, uint mods, uint vk);
     [DllImport("user32.dll")] static extern bool UnregisterHotKey(IntPtr h, int id);
     [DllImport("user32.dll", CharSet = CharSet.Unicode)] static extern uint RegisterWindowMessage(string s);
-    [DllImport("user32.dll")] static extern bool DestroyIcon(IntPtr h);
     [DllImport("shell32.dll")] static extern UIntPtr SHAppBarMessage(uint msg, ref APPBARDATA d);
     const int SW_HIDE = 0, SW_SHOWNA = 8;
     const uint MOD_ALT = 1, MOD_CONTROL = 2, MOD_NOREPEAT = 0x4000;
@@ -54,67 +34,33 @@ class BarraCtx : ApplicationContext
     class MsgWindow : NativeWindow
     {
         public Action<Message> OnMsg;
-        public MsgWindow() { CreateHandle(new CreateParams { Caption = "BarraOculta" }); }
+        public MsgWindow() { CreateHandle(new CreateParams { Caption = "Lumen.BarraOculta" }); }
         protected override void WndProc(ref Message m) { if (OnMsg != null) OnMsg(m); base.WndProc(ref m); }
     }
 
     readonly MsgWindow win = new MsgWindow();
-    readonly NotifyIcon icon = new NotifyIcon();
-    readonly System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
+    readonly Timer timer = new Timer();
     readonly uint taskbarCreated = RegisterWindowMessage("TaskbarCreated");
-    readonly ToolStripMenuItem toggleItem;
     List<IntPtr> trays = new List<IntPtr>();
     DateTime lastFind = DateTime.MinValue, lastAutoHide = DateTime.MinValue;
     bool showMode, wasRevealed;
     DateTime showStart, hiddenSince = DateTime.MaxValue;
+    public bool AtalhoLivre { get; private set; }
+    public bool AMostrar { get { return showMode; } }
+    public event Action Mudou;
 
-    public BarraCtx()
+    public BarraOculta()
     {
-        bool hk = RegisterHotKey(win.Handle, HOTKEY_ID, MOD_CONTROL | MOD_ALT | MOD_NOREPEAT, (uint)Keys.B);
+        AtalhoLivre = RegisterHotKey(win.Handle, HOTKEY_ID, MOD_CONTROL | MOD_ALT | MOD_NOREPEAT, (uint)Keys.B);
         win.OnMsg = m =>
         {
-            if (m.Msg == 0x0312 && m.WParam.ToInt32() == HOTKEY_ID) Toggle();
+            if (m.Msg == 0x0312 && m.WParam.ToInt32() == HOTKEY_ID) Alternar();
             else if (taskbarCreated != 0 && m.Msg == (int)taskbarCreated) { lastFind = DateTime.MinValue; lastAutoHide = DateTime.MinValue; }
         };
-
-        var menu = new ContextMenuStrip();
-        toggleItem = new ToolStripMenuItem("Mostrar a barra do Windows", null, (s, e) => Toggle()) { ShortcutKeyDisplayString = "Ctrl+Alt+B" };
-        menu.Items.Add(toggleItem);
-        menu.Items.Add(new ToolStripSeparator());
-        menu.Items.Add(new ToolStripMenuItem("Sair (volta a mostrar a barra)", null, (s, e) => ExitThread()));
-        icon.ContextMenuStrip = menu;
-        icon.Icon = MakeIcon();
-        icon.Text = "BarraOculta · Ctrl+Alt+B mostra a barra do Windows";
-        icon.DoubleClick += (s, e) => Toggle();
-        icon.Visible = true;
-        if (!hk) icon.ShowBalloonTip(6000, "BarraOculta", "O atalho Ctrl+Alt+B está ocupado por outra app. Usa o ícone para mostrar a barra.", ToolTipIcon.Warning);
-
         timer.Interval = 200;
         timer.Tick += (s, e) => Tick();
         timer.Start();
         Tick();
-    }
-
-    static Icon MakeIcon()
-    {
-        using (var bmp = new Bitmap(32, 32))
-        using (var g = Graphics.FromImage(bmp))
-        {
-            g.SmoothingMode = SmoothingMode.AntiAlias;
-            g.Clear(Color.Transparent);
-            using (var p = new GraphicsPath())
-            {
-                p.AddArc(3, 19, 8, 8, 90, 180); p.AddArc(21, 19, 8, 8, 270, 180); p.CloseFigure();
-                using (var b = new SolidBrush(Color.FromArgb(235, 255, 255, 255))) g.FillPath(b, p);
-                using (var pen = new Pen(Color.FromArgb(200, 0, 0, 0), 1.5f)) g.DrawPath(pen, p);
-            }
-            using (var pen = new Pen(Color.White, 2.5f) { StartCap = LineCap.Round, EndCap = LineCap.Round })
-            { g.DrawLine(pen, 16, 4, 16, 14); g.DrawLine(pen, 11, 9, 16, 14); g.DrawLine(pen, 21, 9, 16, 14); }
-            IntPtr h = bmp.GetHicon();
-            var ic = (Icon)Icon.FromHandle(h).Clone();
-            DestroyIcon(h);
-            return ic;
-        }
     }
 
     static List<IntPtr> FindTrays()
@@ -146,7 +92,7 @@ class BarraCtx : ApplicationContext
         return IntPtr.Zero;
     }
 
-    void EnsureAutoHide(IntPtr p)
+    static void EnsureAutoHide(IntPtr p)
     {
         var d = new APPBARDATA(); d.cbSize = Marshal.SizeOf(d); d.hWnd = p;
         if (((uint)SHAppBarMessage(4, ref d) & 1) == 0) { d.lParam = (IntPtr)1; SHAppBarMessage(10, ref d); }
@@ -172,37 +118,35 @@ class BarraCtx : ApplicationContext
         else if (wasRevealed)
         {
             if (hiddenSince == DateTime.MaxValue) hiddenSince = now;
-            else if ((now - hiddenSince).TotalMilliseconds > 1200) EnterHidden();
+            else if ((now - hiddenSince).TotalMilliseconds > 1200) Esconder();
         }
-        else if ((now - showStart).TotalSeconds > 5) EnterHidden();
+        else if ((now - showStart).TotalSeconds > 5) Esconder();
     }
 
-    void Toggle() { if (showMode) EnterHidden(); else EnterShow(); }
+    public void Alternar() { if (showMode) Esconder(); else Mostrar(); }
 
-    void EnterShow()
+    void Mostrar()
     {
         trays = FindTrays(); lastFind = DateTime.Now;
         showMode = true; wasRevealed = false; hiddenSince = DateTime.MaxValue; showStart = DateTime.Now;
         foreach (var t in trays) ShowWindow(t, SW_SHOWNA);
         IntPtr p = Primary();
         if (p != IntPtr.Zero) SetForegroundWindow(p); // a barra em ocultar automático sobe enquanto tiver o foco
-        toggleItem.Text = "Esconder a barra do Windows";
+        if (Mudou != null) Mudou();
     }
 
-    void EnterHidden()
+    void Esconder()
     {
         showMode = false;
         foreach (var t in trays) if (IsWindowVisible(t)) ShowWindow(t, SW_HIDE);
-        toggleItem.Text = "Mostrar a barra do Windows";
+        if (Mudou != null) Mudou();
     }
 
-    protected override void ExitThreadCore()
+    public void Dispose()
     {
-        timer.Stop();
+        timer.Stop(); timer.Dispose();
         UnregisterHotKey(win.Handle, HOTKEY_ID);
         foreach (var t in FindTrays()) ShowWindow(t, SW_SHOWNA);
-        icon.Visible = false; icon.Dispose();
         win.DestroyHandle();
-        base.ExitThreadCore();
     }
 }

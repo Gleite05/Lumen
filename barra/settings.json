@@ -76,7 +76,7 @@
   "hideTaskbar": false,
   "hideBanners": true,
   "trayHost": true,
-  "remoteVisible":  true,
+  "remoteVisible": false,
   "winKeyStart": true,
   "winNumbers": false,
   "startOnLogin": true,

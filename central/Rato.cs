@@ -1,7 +1,7 @@
 ﻿// Rato: os painéis ficam por baixo dos ícones do ambiente de trabalho, por isso o rato chega primeiro
 // à lista dos ícones. Um gancho de baixo nível (WH_MOUSE_LL) vê onde o rato está e, se for espaço vazio
 // do ambiente de trabalho por cima da área dos painéis, entrega o movimento e os cliques também à página
-// (à janela Chrome_RenderWidgetHostHWND do WebView2). Num ícone, o clique é só do ícone.
+// e a página faz o realce e o clique. Num ícone, o clique é só do ícone.
 using System;
 using System.Drawing;
 using System.Runtime.InteropServices;

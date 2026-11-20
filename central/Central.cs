@@ -286,9 +286,6 @@ class Janela : Form
         get { var cp = base.CreateParams; cp.ExStyle |= 0x80; return cp; } // WS_EX_TOOLWINDOW: fora do Alt+Tab
     }
 
-    // Começa escondida: só aparece se houver painéis ligados (Ancorar).
-    protected override void SetVisibleCore(bool value) { base.SetVisibleCore(value && visivel); }
-
     Rectangle CalcularArea()
     {
         var b = Screen.PrimaryScreen.Bounds;

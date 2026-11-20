@@ -5,7 +5,8 @@ param(
     [ValidateSet('escuro', 'claro')] [string]$Cursores = 'escuro',
     [switch]$SemDefinicoes,
     [switch]$SemCursores,
-    [switch]$SemFundo
+    [switch]$SemFundo,
+    [switch]$SemCentral
 )
 $ErrorActionPreference = 'Stop'
 $aqui = $PSScriptRoot
@@ -71,6 +72,31 @@ if ($LASTEXITCODE -ne 0) { throw 'A compilação da BarraOculta falhou.' }
 Set-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run' -Name BarraOculta -Value "`"$barra`""
 Start-Process $barra
 
+# 3b. Central (fundo-central de controlo) -------------------------------------------
+if (-not $SemCentral) {
+    Passo 'Central (fundo com as horas de trabalho + painéis)'
+    $central = Join-Path $env:USERPROFILE '.central'
+    New-Item -ItemType Directory -Force $central | Out-Null
+    & (Join-Path $central 'Central.exe') --sair 2>$null
+    Start-Sleep -Seconds 2
+    Get-Process Central -ErrorAction SilentlyContinue | Stop-Process -Force
+    $wv = Join-Path $env:TEMP 'webview2-nupkg'
+    Remove-Item $wv -Recurse -Force -ErrorAction SilentlyContinue
+    Invoke-WebRequest 'https://www.nuget.org/api/v2/package/Microsoft.Web.WebView2' -OutFile "$wv.zip" -UseBasicParsing
+    Expand-Archive "$wv.zip" $wv -Force
+    $lib = Get-ChildItem $wv -Recurse -Filter 'Microsoft.Web.WebView2.Core.dll' | Where-Object { $_.FullName -match '\\lib\\net4' } | Select-Object -First 1
+    Copy-Item (Join-Path $lib.DirectoryName 'Microsoft.Web.WebView2.Core.dll'), (Join-Path $lib.DirectoryName 'Microsoft.Web.WebView2.WinForms.dll') $central -Force
+    Copy-Item (Join-Path $wv 'runtimes\win-x64\native\WebView2Loader.dll') $central -Force
+    cmd /c "`"$(Join-Path $aqui 'central\compilar.cmd')`" `"$central`""
+    if ($LASTEXITCODE -ne 0) { throw 'A compilação do Central falhou.' }
+    New-Item -ItemType Directory -Force (Join-Path $central 'web') | Out-Null
+    Copy-Item (Join-Path $aqui 'central\web\*') (Join-Path $central 'web') -Force
+    if (-not (Test-Path (Join-Path $central 'config.json'))) { Copy-Item (Join-Path $aqui 'central\config.exemplo.json') (Join-Path $central 'config.json') }
+    Set-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run' -Name Central -Value "`"$(Join-Path $central 'Central.exe')`""
+    Start-Process (Join-Path $central 'Central.exe')
+    Write-Host "  Edita $central\config.json (horário, servidores, atalhos) e escolhe Recarregar no ícone do Central."
+}
+
 # 4. Ajustes ------------------------------------------------------------------------
 Passo 'Sem intermitência na barra do Windows'
 Set-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -Name TaskbarFlashing -Value 0 -Type DWord
@@ -93,7 +119,7 @@ if (-not $SemCursores) {
 }
 
 # 6. Fundo --------------------------------------------------------------------------
-if (-not $SemFundo) {
+if (-not $SemFundo -and $SemCentral) {   # com o Central, o fundo é dele
     Passo "Fundo $Fundo"
     $pasta = Join-Path ([Environment]::GetFolderPath('MyPictures')) 'Wallpapers\Vetoriais'
     New-Item -ItemType Directory -Force $pasta | Out-Null

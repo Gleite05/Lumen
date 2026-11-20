@@ -4,6 +4,14 @@ O meu Windows 11 com outra cara: uma barra de vidro ao estilo macOS no lugar da 
 
 Tudo corre **sem direitos de administrador**, numa conta normal (até num PC de domínio).
 
+![O ambiente de trabalho com o Central](capturas/central.png)
+
+O fundo é um relógio disfarçado: as camadas acendem-se ao longo do horário de trabalho.
+
+![O fundo às 9:00, 11:40, 15:15 e 18:00](capturas/fundo-ao-longo-do-dia.png)
+
+<sub>Capturas com dados de exemplo.</sub>
+
 ---
 
 ## O que está cá dentro
@@ -12,6 +20,7 @@ Tudo corre **sem direitos de administrador**, numa conta normal (até num PC de 
 |---|---|
 | [`atrium-desktop/`](https://github.com/Gleite05/atrium-desktop/tree/vpn) | A barra **Atrium** modificada (submódulo → fork `Gleite05/atrium-desktop`, ramo `vpn`). |
 | [`atrium/`](atrium/) | As minhas definições do Atrium (vidro, tamanhos, widgets à direita…). |
+| [`central/`](central/) | **Central**: o fundo de ecrã vira central de controlo — as camadas acendem-se com as horas de trabalho (só tu sabes) e por cima há painéis de servidores, agenda do Outlook, VPN, atalhos e música. Também guarda as definições do Atrium. |
 | [`barra-oculta/`](barra-oculta/) | **BarraOculta**: esconde de vez a barra do Windows; `Ctrl+Alt+B` mostra-a. |
 | [`fundos/`](fundos/) | 6 fundos vetoriais 3840×2400 (Esmeralda, Oceano, Glaciar, Índigo, Âmbar, Grafite) e o gerador em Python. |
 | [`cursores/`](cursores/) | Cursores **Fluent Escuro** e **Fluent Claro** (seta sem cauda, estilo Windows 11) e o gerador. |
@@ -45,11 +54,12 @@ O instalador:
 - troca o `Atrium.exe` pela versão modificada (descarregada das [Releases](https://github.com/Gleite05/Windows-2.0/releases); guarda o original como `Atrium-original.exe`);
 - copia as definições do Atrium (faz cópia das tuas antes);
 - compila e põe a arrancar a **BarraOculta** (usa o `csc` do .NET Framework que já vem com o Windows);
+- compila e põe a arrancar o **Central** (descarrega o WebView2 do NuGet); o fundo passa a ser dele;
 - desliga a intermitência da barra do Windows;
 - instala os cursores **Fluent Escuro** e o fundo **Esmeralda**;
 - põe 15 s de atraso na tarefa de arranque do Atrium.
 
-Opções: `-Fundo oceano` (ou `glaciar`, `indigo`, `ambar`, `grafite`), `-Cursores claro`, `-SemDefinicoes` (não mexe nas definições do Atrium), `-SemCursores`, `-SemFundo`.
+Opções: `-SemCentral` (e então `-Fundo oceano`, `glaciar`, `indigo`, `ambar` ou `grafite` escolhe um fundo fixo), `-Cursores claro`, `-SemDefinicoes` (não mexe nas definições do Atrium), `-SemCursores`, `-SemFundo`.
 
 ### Atalhos
 

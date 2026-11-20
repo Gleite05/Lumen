@@ -97,6 +97,19 @@ if (-not $SemCentral) {
     Write-Host "  Edita $central\config.json (horário, servidores, atalhos) e escolhe Recarregar no ícone do Central."
 }
 
+# 3c. Interruptor "Modo Windows original" ------------------------------------------
+Passo 'Atalho "Modo Windows original" no ambiente de trabalho'
+$central = Join-Path $env:USERPROFILE '.central'
+New-Item -ItemType Directory -Force $central | Out-Null
+cmd /c "`"$(Join-Path $aqui 'modo-windows\compilar.cmd')`" `"$central`""
+if ($LASTEXITCODE -ne 0) { throw 'A compilação do ModoWindows falhou.' }
+Copy-Item (Join-Path $aqui 'modo-windows\windows-original.ico'), (Join-Path $aqui 'modo-windows\windows2.ico') $central -Force
+$desk = [Environment]::GetFolderPath('DesktopDirectory')
+Remove-Item (Join-Path $desk 'Modo Windows 2.0.lnk') -ErrorAction SilentlyContinue
+$lnk = (New-Object -ComObject WScript.Shell).CreateShortcut((Join-Path $desk 'Modo Windows original.lnk'))
+$lnk.TargetPath = Join-Path $central 'ModoWindows.exe'; $lnk.WorkingDirectory = $central
+$lnk.IconLocation = (Join-Path $central 'windows-original.ico') + ',0'; $lnk.Description = 'Volta ao Windows de origem'; $lnk.Save()
+
 # 4. Ajustes ------------------------------------------------------------------------
 Passo 'Sem intermitência na barra do Windows'
 Set-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -Name TaskbarFlashing -Value 0 -Type DWord

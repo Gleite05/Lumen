@@ -21,6 +21,7 @@ O fundo é um relógio disfarçado: as camadas acendem-se ao longo do horário d
 | [`atrium-desktop/`](https://github.com/Gleite05/atrium-desktop/tree/vpn) | A barra **Atrium** modificada (submódulo → fork `Gleite05/atrium-desktop`, ramo `vpn`). |
 | [`atrium/`](atrium/) | As minhas definições do Atrium (vidro, tamanhos, widgets à direita…). |
 | [`central/`](central/) | **Central**: o fundo de ecrã vira central de controlo — as camadas acendem-se com as horas de trabalho (só tu sabes) e por cima há painéis de servidores, agenda do Outlook, VPN, atalhos e música. Também guarda as definições do Atrium. |
+| [`modo-windows/`](modo-windows/) | Atalho **Modo Windows original** no ambiente de trabalho: um clique e volta tudo ao Windows de origem (barra, fundo, cursores, sem widgets); outro clique e volta o Windows 2.0. |
 | [`barra-oculta/`](barra-oculta/) | **BarraOculta**: esconde de vez a barra do Windows; `Ctrl+Alt+B` mostra-a. |
 | [`fundos/`](fundos/) | 6 fundos vetoriais 3840×2400 (Esmeralda, Oceano, Glaciar, Índigo, Âmbar, Grafite) e o gerador em Python. |
 | [`cursores/`](cursores/) | Cursores **Fluent Escuro** e **Fluent Claro** (seta sem cauda, estilo Windows 11) e o gerador. |

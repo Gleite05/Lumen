@@ -84,6 +84,18 @@ Copy-Item (Join-Path $Marca 'lumen-1024.png') (Join-Path $Destino 'assets/atrium
 
 # 5. Versão do Lumen (barra e definições) e autor.
 $cm = Join-Path $Destino 'native/CMakeLists.txt'
+# a versão do original também está escrita à mão no .rc e nos manifestos
+$orig = [regex]::Match((Get-Content $cm -Raw), 'project\(atrium_native VERSION ([0-9]+\.[0-9]+\.[0-9]+)').Groups[1].Value
+if ($orig) {
+    $v4 = ($Versao.Split('.') + @('0', '0', '0'))[0..3]
+    foreach ($f in 'native/core/core.rc', 'native/core/core.manifest', 'settings/Lumen.Settings/app.manifest') {
+        $p = Join-Path $Destino $f
+        if (-not (Test-Path $p)) { continue }
+        $t = [IO.File]::ReadAllText($p)
+        $t = $t.Replace("$orig.0", ($v4 -join '.')).Replace(($orig.Replace('.', ',') + ',0'), ($v4 -join ',')).Replace("`"$orig`"", "`"$Versao`"")
+        [IO.File]::WriteAllText($p, $t, $utf8)
+    }
+}
 (Get-Content $cm -Raw) -replace 'project\(atrium_native VERSION [0-9.]+', "project(atrium_native VERSION $Versao" | Set-Content $cm -NoNewline -Encoding utf8
 $cs = Join-Path $Destino 'settings/Lumen.Settings/Lumen.Settings.csproj'
 $x = Get-Content $cs -Raw

@@ -50,13 +50,33 @@ static class P
         bool nova;
         using (var m = new Mutex(true, "Local\\Lumen.Central", out nova))
         {
+            // depois de um reinício automático, espera que a instância anterior acabe de sair
+            if (!nova && a.Length > 0 && a[0] == "--reinicio")
+                try { nova = m.WaitOne(15000); } catch (AbandonedMutexException) { nova = true; }
             if (!nova) return;
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             Application.EnableVisualStyles();
+            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+            Application.ThreadException += (s, e) => Log("erro: " + e.Exception);
+            AppDomain.CurrentDomain.UnhandledException += (s, e) => Log("erro fatal: " + e.ExceptionObject);
             var j = new Janela();
+            var ctx = new ApplicationContext();
+            // A janela vive dentro da camada do fundo do Explorer: se o Explorer a recriar, a janela é destruída
+            // com ela. Nesse caso o Central volta a arrancar (em vez de desaparecer sem aviso).
+            j.HandleDestroyed += (s, e) =>
+            {
+                if (!j.Saindo)
+                {
+                    Log("a janela foi destruída por fora (o Explorer recriou o fundo?) — a reiniciar");
+                    try { Process.Start(Application.ExecutablePath, "--reinicio"); } catch (Exception x) { Log("reinício: " + x.Message); }
+                }
+                ctx.ExitThread();
+            };
             var sair = new EventWaitHandle(false, EventResetMode.AutoReset, "Local\\Lumen.Central.Sair");
             new Thread(() => { sair.WaitOne(); try { j.BeginInvoke((Action)(() => j.Sair())); } catch { } }) { IsBackground = true }.Start();
-            Application.Run(j);
+            j.Show();
+            Application.Run(ctx);
+            j.Fechar();
         }
     }
 
@@ -442,7 +462,7 @@ class Janela : Form
                 : Lumen.T("Mostrar a barra do Windows", "Show the Windows taskbar", "Mostrar la barra de Windows"), null, (s, e) => barraOculta.Alternar()) { ShortcutKeyDisplayString = "Ctrl+Alt+B" });
         menu.Items.Add(Lumen.T("Modo Windows clássico", "Classic Windows mode", "Modo Windows clásico"), null, (s, e) => Abrir(Lumen.Classico, "original"));
         menu.Items.Add(new ToolStripSeparator());
-        menu.Items.Add(Lumen.T("Recarregar", "Reload", "Recargar"), null, (s, e) => { icone.Visible = false; if (barraOculta != null) barraOculta.Dispose(); Application.Restart(); });
+        menu.Items.Add(Lumen.T("Recarregar", "Reload", "Recargar"), null, (s, e) => { Saindo = true; Fechar(); Process.Start(Application.ExecutablePath, "--reinicio"); Close(); });
         menu.Items.Add(Lumen.T("Sair", "Quit", "Salir"), null, (s, e) => Sair());
         var velho = icone.ContextMenuStrip;
         icone.ContextMenuStrip = menu;
@@ -533,8 +553,19 @@ class Janela : Form
         base.WndProc(ref m);
     }
 
+    public bool Saindo { get; private set; }
+
+    // Liberta o que fica fora da janela (barra do Windows, ícone) quando o processo termina.
+    public void Fechar()
+    {
+        if (barraOculta != null) { barraOculta.Dispose(); barraOculta = null; }
+        if (icone != null) { icone.Visible = false; icone.Dispose(); icone = null; }
+    }
+
     public void Sair()
     {
+        Saindo = true;
+        P.Log("a sair");
         dados.Parar();
         if (barraOculta != null) { barraOculta.Dispose(); barraOculta = null; }
         if (icone != null) icone.Visible = false;
